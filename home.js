@@ -67,7 +67,7 @@ async function getDataFromFirestore() {
             <div class="space-y-4">
                 <div class="bg-white p-4 rounded shadow-md">
                     <h3 class="text-lg font-bold">${item.title}</h3>
-                    <p class="text-sm text-gray-500">Posted By <span class="font-bold"> Muhammad Mustafa </span> on ${new Date().toLocaleDateString()}</p>
+                    <p class="text-sm text-gray-500">Posted By <span class="font-bold"> Muhammad Abdullah </span> on ${new Date().toLocaleDateString()}</p>
                     <p class="mt-2">${item.description}</p>
                     <div class="flex justify-start space-x-2 mt-4">
                         <button class="editBtn text-gray-500 hover:text-gray-600" data-id="${item.id}" data-index="${index}">Edit</button>
