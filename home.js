@@ -49,53 +49,69 @@ form.addEventListener('submit',async (event)=>{
       }
 })
 
-
-async function getDataFromFirestore(){
-    const arr =[];
-    const querySnapshot = await getDocs(collection(db, "posts"));
+async function getDataFromFirestore() {
+    const arr = [];  
+    const querySnapshot = await getDocs(collection(db, 'posts'));  
+    
     querySnapshot.forEach((doc) => {
-       arr.push(doc.data());
+        arr.push({ id: doc.id, ...doc.data() }); 
     });
-    console.log(arr);
-    arr.map((item,index)=>{
+
+    console.log(arr); 
+    
+    const card = document.getElementById('card'); 
+    card.innerHTML = ''; 
+
+    arr.map((item, index) => {
         card.innerHTML += `
-           
             <div class="space-y-4">
-                
                 <div class="bg-white p-4 rounded shadow-md">
                     <h3 class="text-lg font-bold">${item.title}</h3>
-                    <p class="text-sm text-gray-500">Posted by <span class="font-bold">Harman Malik</span> - August 10, 2023</p>
+                    <p class="text-sm text-gray-500">Posted By <span class="font-bold"> Muhammad Mustafa </span> on ${new Date().toLocaleDateString()}</p>
                     <p class="mt-2">${item.description}</p>
                     <div class="flex justify-start space-x-2 mt-4">
-                        <button id="editBtn" class="deleteBtn text-gray-500 hover:text-gray-600">Edit</button>
-                        <button id="deleteBtn" class="editBtn text-gray-500 hover:text-gray-600">Delete</button>
+                        <button class="editBtn text-gray-500 hover:text-gray-600" data-id="${item.id}" data-index="${index}">Edit</button>
+                        <button class="deleteBtn text-gray-500 hover:text-gray-600" data-id="${item.id}" data-index="${index}">Delete</button>
                     </div>
                 </div>
-        
             </div>
-        `
-        let deleteBtn = document.querySelectorAll('#deleteBtn')
-        let editBtn = document.querySelectorAll('#editBtn')
+        `;
+    });
 
-        deleteBtn.forEach((btn, index) => {
-            btn.addEventListener('click', async () => {
-                await deleteDoc(doc(db, "posts", arr[index].id));
-                arr.splice(index, 1)
-                getDataFromFirestore()
-            })
-        })
 
-        editBtn.forEach((btn, index) => {
-            btn.addEventListener('click', async () => {
-                let updateValue = prompt('enter todo')
-                const updateDoc = doc(db, "posts", arr[index].id);
-                await updateDoc(updateDoc, {
-                    todos: updateValue
+    const deleteBtns = document.querySelectorAll('.deleteBtn');
+    deleteBtns.forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+            const id = e.target.getAttribute('data-id');
+            const index = e.target.getAttribute('data-index');
+
+            await deleteDoc(doc(db, 'posts', id));  
+            arr.splice(index, 1);  
+            getDataFromFirestore();  
+        });
+    });
+
+    
+    const editBtns = document.querySelectorAll('.editBtn');
+    editBtns.forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+            const id = e.target.getAttribute('data-id');
+            const index = e.target.getAttribute('data-index');
+
+            const updateValue = prompt('Enter new value for the post:');
+            if (updateValue) {
+                const updateDocRef = doc(db, 'posts', id);
+
+                await updateDoc(updateDocRef, {
+                    description: updateValue 
                 });
-                arr[index].posts = updateValue
-                getDataFromFirestore()
-            })
-        })
-    })
+
+                arr[index].description = updateValue;  
+                getDataFromFirestore();  
+            }
+        });
+    });
 }
-getDataFromFirestore()
+
+
+getDataFromFirestore();
